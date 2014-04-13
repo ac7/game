@@ -18,7 +18,7 @@ func HandleConn(conn net.Conn, id int) error {
 		return err
 	}
 	if !bytes.Equal(helloMessage, []byte("handshake")) {
-		return fmt.Errorf(`Recieved non-protocol handshake "%s", abort. (lengths %d, %d)`, string(helloMessage), len(helloMessage), len("handshake"))
+		return fmt.Errorf(`Recieved non-protocol handshake "%s", abort (expected "%s").`, string(helloMessage), "handshake")
 	}
 
 	return conn.Close()
