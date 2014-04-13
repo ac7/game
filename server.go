@@ -31,6 +31,11 @@ func main() {
 			} else {
 				log.Println("Connection", id, "terminated sucessfully.")
 			}
+
+			err = conn.Close()
+			if err != nil {
+				log.Printf("Warning, error closing connection %d: %s\n", id, err.Error())
+			}
 		}(id)
 	}
 }
