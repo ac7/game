@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"net"
 )
 
@@ -14,12 +15,13 @@ func HandleConn(conn net.Conn, id int) error {
 	var helloMessage []byte = make([]byte, 9)
 	_, err := conn.Read(helloMessage)
 	if err != nil {
-		fmt.Println("Could not read from connection:", err)
-		return err
+		return fmt.Errorf("Could not read from connection: %s", err.Error())
 	}
 	if !bytes.Equal(helloMessage, []byte("handshake")) {
 		return fmt.Errorf(`Recieved non-protocol handshake "%s", abort (expected "%s").`, string(helloMessage), "handshake")
 	}
+
+	log.Println("Connection", id, "send correct handshake.")
 
 	return conn.Close()
 }

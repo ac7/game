@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 
 	"github.com/ac7/game/server"
@@ -10,7 +11,7 @@ import (
 func main() {
 	port := 1030
 	id := 0
-	fmt.Printf("starting server on localhost:%d\n", port)
+	log.Printf("starting server on localhost:%d\n", port)
 	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		panic(err)
@@ -18,7 +19,7 @@ func main() {
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			fmt.Println("Warning, could not accept connection: ", err)
+			log.Println("Warning, could not accept connection: ", err)
 			continue
 		}
 		id = id + 1
@@ -26,9 +27,9 @@ func main() {
 		go func(id int) {
 			err := server.HandleConn(conn, id)
 			if err != nil {
-				fmt.Println("Connection", id, "terminated with error: ", err)
+				log.Println("Connection", id, "terminated with error: ", err)
 			} else {
-				fmt.Println("Connection", id, "terminated sucessfully.")
+				log.Println("Connection", id, "terminated sucessfully.")
 			}
 		}(id)
 	}
