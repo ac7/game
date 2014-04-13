@@ -28,10 +28,6 @@ func TestMarine(t *testing.T) {
 		t.Errorf("Unit did not decrease to %d health as expected (health was %d)",
 			initialHealth-3, m.Health())
 	}
-
-	if _, ok := m.(*Marine); !ok {
-		t.Errorf("Could not cast to *Marine")
-	}
 }
 
 func TestDistance(t *testing.T) {
