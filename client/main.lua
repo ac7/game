@@ -2,7 +2,7 @@
 local socket = require "socket"
 local tcp
 
-function love.load()
+function love.load(arg)
 	tcp = socket.tcp()
 	if not tcp:connect("localhost", 1030) then
 		error("Unable to connect to localhost:1030")
@@ -25,6 +25,11 @@ function love.load()
 	print("Recieved valid handshake.")
 
 	tcp:close()
-	love.event.push("quit")
+
+	for _, arg in pairs(arg) do
+		if arg == "--test_conn_and_quit" then
+			love.event.push("quit")
+		end
+	end
 end
 
