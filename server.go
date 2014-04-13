@@ -11,8 +11,8 @@ import (
 func main() {
 	port := 1030
 	id := 0
-	log.Printf("starting server on localhost:%d\n", port)
-	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	log.Printf("Starting server on localhost:%d\n", port)
+	ln, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +22,7 @@ func main() {
 			log.Println("Warning, could not accept connection: ", err)
 			continue
 		}
-		id = id + 1
+		id++
 
 		go func(id int) {
 			err := server.HandleConn(conn, id)
