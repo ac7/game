@@ -21,8 +21,9 @@ func main() {
 	log.Printf("Starting server on localhost:%d\n", port)
 	ln, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
+	defer ln.Close()
 
 	for {
 		conn, err := ln.Accept()

@@ -14,8 +14,8 @@ type IUnit interface {
 	Health() int
 	MaxHealth() int
 	Tags() int
-	HasTags(tags ...int) bool
 
+	HasTags(tags ...int) bool
 	AddTags(tags ...int)
 	RemoveTags(tags ...int)
 	TakeDamage(amount int) (alive bool)
