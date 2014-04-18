@@ -1,5 +1,5 @@
 
-LOVE=love
+LOVE=./love
 
 test:
 	go run server.go --test_conn_and_quit &
