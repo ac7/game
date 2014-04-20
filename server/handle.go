@@ -12,8 +12,8 @@ func HandleConn(conn io.ReadWriter, id int) error {
 		return fmt.Errorf("Invalid connection!")
 	}
 
-	// first we send the HANDSHAKE_SERVER string to the client
-	var helloMessage []byte = make([]byte, 9)
+	// first we check to make sure the client returns the HANDSHAKE_CLIENT string
+	var helloMessage []byte = make([]byte, len(HANDSHAKE_CLIENT))
 	_, err := conn.Read(helloMessage)
 	if err != nil {
 		return fmt.Errorf("Could not read from connection: %s", err.Error())
@@ -24,7 +24,7 @@ func HandleConn(conn io.ReadWriter, id int) error {
 	}
 	log.Printf("Connection %d sent correct handshake \"%s\"\n", id, HANDSHAKE_CLIENT)
 
-	// then we check to make sure the client returns the HANDSHAKE_CLIENT string
+	// then we send the HANDSHAKE_SERVER string to the client
 	n, err := conn.Write([]byte(HANDSHAKE_SERVER))
 	if err != nil {
 		return fmt.Errorf(`Cannot write to connection %d: "%s"`, id, err.Error())
