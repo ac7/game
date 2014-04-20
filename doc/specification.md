@@ -4,10 +4,20 @@
 The server will exchange packets with the client about the state of the
 game. Each packet will be delimeted with a newline byte.
 
-Units can be serialized to a representation like this:
+Units are serialized with the "msgpack" protocol, a common interface
+system like JSON that has implementations in every modern language. The
+server expects to send and recieve string-to-value maps. The maps look
+like this currently:
 
-	example: Marine;12;24;0;-12.4;18.3
-	layout: NAME; HEALTH; MAX_HEALTH; TAGS; XPOS; YPOS
+	name -> unit name             (string)
+	hp -> unit health             (int)
+	maxhp -> unit maximum health  (int)
+	tags -> unit tags             (int)
+	x -> unit x position          (float)
+	y -> unit y position          (float)
+
+Eventually the server will support partial updates (for example, just
+position or just health updates).
 
 Tags are used to represent attributes of the objects, like `TAG_BIO`
 for biological units and `TAG_MECH` for mechanical objects. The full
