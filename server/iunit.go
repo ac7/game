@@ -14,13 +14,13 @@ type IUnit interface {
 	Health() int
 	MaxHealth() int
 	Tags() int
+	Position() (float64, float64)
 
 	HasTags(tags ...int) bool
 	AddTags(tags ...int)
 	RemoveTags(tags ...int)
 	TakeDamage(amount int) (alive bool)
 	SetPosition(float64, float64)
-	Position() (float64, float64)
 	Distance(other IUnit) float64
 }
 

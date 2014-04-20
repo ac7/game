@@ -1,49 +1,45 @@
 package server
 
 import (
-	"fmt"
-	"strconv"
-	"strings"
+	"log"
+
+	"github.com/vmihailenco/msgpack"
 )
 
 func Serialize(u IUnit) string {
 	x, y := u.Position()
-	return fmt.Sprintf(`%s;%d;%d;%d;%s;%s`, u.Name(), u.Health(),
-		u.MaxHealth(), u.Tags(),
-		strconv.FormatFloat(x, 'f', -1, 64),
-		strconv.FormatFloat(y, 'f', -1, 64))
+	msg, err := msgpack.Marshal(map[string]interface{}{
+		"name":  u.Name(),
+		"hp":    int64(u.Health()),
+		"maxhp": int64(u.MaxHealth()),
+		"tags":  int64(u.Tags()),
+		"x":     x,
+		"y":     y,
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(msg)
 }
 
+// FIXME: this is dangerous, a bad packet would crash the server
+// need an elegant way to check for presence in the map
 func Deserialize(s string) (IUnit, error) {
 	u := new(Unit)
-	var err error
 
-	splits := strings.Split(s, ";")
-	if len(splits) != 6 {
-		return nil, fmt.Errorf("Splitting string yielded %d fragments (expected %d)",
-			len(splits), 6)
+	var attrs map[string]interface{}
+	err := msgpack.Unmarshal([]byte(s), &attrs)
+	if err != nil {
+		return nil, err
 	}
 
-	u.name = splits[0]
-	u.health, err = strconv.Atoi(splits[1])
-	if err != nil {
-		return nil, err
-	}
-	u.maxHealth, err = strconv.Atoi(splits[2])
-	if err != nil {
-		return nil, err
-	}
-	u.tags, err = strconv.Atoi(splits[3])
-	if err != nil {
-		return nil, err
-	}
-	u.x, err = strconv.ParseFloat(splits[4], 64)
-	if err != nil {
-		return nil, err
-	}
-	u.y, err = strconv.ParseFloat(splits[5], 64)
-	if err != nil {
-		return nil, err
-	}
+	u.name = attrs["name"].(string)
+	u.health = int(attrs["hp"].(int64))
+	u.maxHealth = int(attrs["maxhp"].(int64))
+	u.tags = int(attrs["tags"].(int64))
+	u.x = attrs["x"].(float64)
+	u.y = attrs["y"].(float64)
+
 	return u, nil
 }
