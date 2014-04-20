@@ -4,7 +4,7 @@ import (
 	"math"
 )
 
-type Unit struct {
+type unit struct {
 	id        int
 	name      string
 	health    int
@@ -16,26 +16,26 @@ type Unit struct {
 }
 
 // getters
-func (u *Unit) Id() int        { return u.id }
-func (u *Unit) Name() string   { return u.name }
-func (u *Unit) Health() int    { return u.health }
-func (u *Unit) MaxHealth() int { return u.maxHealth }
-func (u *Unit) Tags() int      { return u.tags }
+func (u *unit) Id() int        { return u.id }
+func (u *unit) Name() string   { return u.name }
+func (u *unit) Health() int    { return u.health }
+func (u *unit) MaxHealth() int { return u.maxHealth }
+func (u *unit) Tags() int      { return u.tags }
 
 // functionality
-func (u *Unit) AddTags(tags ...int) {
+func (u *unit) AddTags(tags ...int) {
 	for _, tag := range tags {
 		u.tags &= tag
 	}
 }
 
-func (u *Unit) RemoveTags(tags ...int) {
+func (u *unit) RemoveTags(tags ...int) {
 	for _, tag := range tags {
 		u.tags ^= tag
 	}
 }
 
-func (u *Unit) HasTags(tags ...int) bool {
+func (u *unit) HasTags(tags ...int) bool {
 	for _, tag := range tags {
 		if u.tags&tag == 0 {
 			return false
@@ -44,21 +44,21 @@ func (u *Unit) HasTags(tags ...int) bool {
 	return true
 }
 
-func (u *Unit) SetPosition(x, y float64) {
+func (u *unit) SetPosition(x, y float64) {
 	u.x = x
 	u.y = y
 }
 
-func (u *Unit) Position() (float64, float64) {
+func (u *unit) Position() (float64, float64) {
 	return u.x, u.y
 }
 
-func (u *Unit) Distance(other IUnit) float64 {
+func (u *unit) Distance(other IUnit) float64 {
 	otherX, otherY := other.Position()
 	return math.Hypot(u.x-otherX, u.y-otherY)
 }
 
-func (u *Unit) TakeDamage(amount int) (alive bool) {
+func (u *unit) TakeDamage(amount int) (alive bool) {
 	u.health -= amount
 	alive = u.health > 0
 	return

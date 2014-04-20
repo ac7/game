@@ -1,7 +1,7 @@
 package server
 
 func makeMarine() IUnit {
-	return &Unit{
+	return &unit{
 		name:      "Marine",
 		health:    70,
 		maxHealth: 70,

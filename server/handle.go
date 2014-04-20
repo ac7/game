@@ -7,9 +7,6 @@ import (
 	"log"
 )
 
-const HANDSHAKE_CLIENT = "handshake"
-const HANDSHAKE_SERVER = "handshake_part_two"
-
 func HandleConn(conn io.ReadWriter, id int) error {
 	if conn == nil {
 		return fmt.Errorf("Invalid connection!")

@@ -27,7 +27,7 @@ func Serialize(u IUnit) string {
 // FIXME: this is dangerous, a bad packet would crash the server
 // need an elegant way to check for presence in the map
 func Deserialize(s string) (IUnit, error) {
-	u := new(Unit)
+	u := new(unit)
 
 	var attrs map[string]interface{}
 	err := msgpack.Unmarshal([]byte(s), &attrs)
