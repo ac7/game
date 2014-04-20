@@ -11,9 +11,9 @@ func Serialize(u IUnit) string {
 	msg, err := msgpack.Marshal(map[string]interface{}{
 		"id":    u.Id(),
 		"name":  u.Name(),
-		"hp":    int64(u.Health()),
-		"maxhp": int64(u.MaxHealth()),
-		"tags":  int64(u.Tags()),
+		"hp":    u.Health(),
+		"maxhp": u.MaxHealth(),
+		"tags":  u.Tags(),
 		"x":     x,
 		"y":     y,
 	})
@@ -35,11 +35,11 @@ func Deserialize(s string) (IUnit, error) {
 		return nil, err
 	}
 
-	u.id = int(attrs["id"].(int64))
+	u.id = attrs["id"].(int64)
 	u.name = attrs["name"].(string)
-	u.health = int(attrs["hp"].(int64))
-	u.maxHealth = int(attrs["maxhp"].(int64))
-	u.tags = int(attrs["tags"].(int64))
+	u.health = attrs["hp"].(int64)
+	u.maxHealth = attrs["maxhp"].(int64)
+	u.tags = attrs["tags"].(int64)
 	u.x = attrs["x"].(float64)
 	u.y = attrs["y"].(float64)
 
