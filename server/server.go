@@ -35,3 +35,10 @@ type IUnit interface {
 	SetPosition(float64, float64)
 	Distance(other IUnit) float64
 }
+
+type IWorld interface {
+	AddUnit(unit IUnit)
+	Unit(id int) IUnit
+	Units() []IUnit
+	RemoveUnit(id int) (success bool)
+}
