@@ -1,5 +1,9 @@
 package server
 
+import (
+	"math/rand"
+)
+
 const (
 	TAG_BIO = 1 << iota
 	TAG_MECH
@@ -9,7 +13,12 @@ const (
 	TAG_RANGED
 )
 
+func newId() int {
+	return rand.Int()
+}
+
 type IUnit interface {
+	Id() int
 	Name() string
 	Health() int
 	MaxHealth() int

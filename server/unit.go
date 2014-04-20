@@ -5,6 +5,7 @@ import (
 )
 
 type Unit struct {
+	id        int
 	name      string
 	health    int
 	maxHealth int
@@ -15,6 +16,7 @@ type Unit struct {
 }
 
 // getters
+func (u *Unit) Id() int        { return u.id }
 func (u *Unit) Name() string   { return u.name }
 func (u *Unit) Health() int    { return u.health }
 func (u *Unit) MaxHealth() int { return u.maxHealth }
