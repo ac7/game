@@ -25,11 +25,5 @@ function love.load(arg)
 	print("Recieved valid handshake.")
 
 	tcp:close()
-
-	for _, arg in pairs(arg) do
-		if arg == "--test_conn_and_quit" then
-			love.event.push("quit")
-		end
-	end
 end
 

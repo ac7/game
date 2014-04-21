@@ -1,17 +1,15 @@
 package server
 
 import (
-	"bufio"
 	"bytes"
-	"strings"
 	"testing"
 )
 
-type mockWriter struct {
+type mockConn struct {
 	t *testing.T
 }
 
-func (mw *mockWriter) Write(input []byte) (int, error) {
+func (mw *mockConn) Write(input []byte) (int, error) {
 	t := mw.t
 	if bytes.Equal(input, []byte(HANDSHAKE_SERVER)) {
 		t.Logf("Valid handshake '%s' from server.", string(input))
@@ -21,14 +19,25 @@ func (mw *mockWriter) Write(input []byte) (int, error) {
 	return len(input), nil
 }
 
+func (mw *mockConn) Read(output []byte) (int, error) {
+	for i, b := range []byte(HANDSHAKE_CLIENT) {
+		output[i] = b
+	}
+	return len(HANDSHAKE_CLIENT), nil
+}
+
+func (mw *mockConn) Close() error {
+	return nil
+}
+
 func TestHandleConn(t *testing.T) {
-	if HandleConn(nil, 0) == nil {
+	server := NewServer()
+	if server.HandleConn(nil, 0) == nil {
 		t.Errorf("Attempt to handle nil connection did not result in error.")
 	}
 
-	reader := strings.NewReader(HANDSHAKE_CLIENT)
-	writer := &mockWriter{t}
-	err := HandleConn(bufio.NewReadWriter(bufio.NewReader(reader), bufio.NewWriter(writer)), 0)
+	mc := &mockConn{t}
+	err := server.HandleConn(mc, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
