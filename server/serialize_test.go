@@ -15,14 +15,15 @@ func TestSerialize(t *testing.T) {
 		},
 	}
 
-	for _, unit := range cases {
-		t.Logf("Testing serialization for unit %+v", unit)
-		str := unit.Serialize()
-		deserializedUnit, err := Deserialize(str)
+	for _, testUnit := range cases {
+		t.Logf("Testing serialization for unit %+v", testUnit)
+		str := testUnit.Serialize()
+		deserializedUnit := &unit{id: testUnit.Id()}
+		err := deserializedUnit.Deserialize(str)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !reflect.DeepEqual(deserializedUnit, unit) {
+		if !reflect.DeepEqual(deserializedUnit, testUnit) {
 			t.Errorf("Didn't deserialize %s correctly.", str)
 		}
 	}

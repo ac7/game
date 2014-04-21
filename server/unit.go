@@ -1,7 +1,10 @@
 package server
 
 import (
+	"log"
 	"math"
+
+	"github.com/vmihailenco/msgpack"
 )
 
 type unit struct {
@@ -62,4 +65,42 @@ func (u *unit) TakeDamage(amount int64) (alive bool) {
 	u.health -= amount
 	alive = u.health > 0
 	return
+}
+
+func (u *unit) Serialize() string {
+	x, y := u.Position()
+	msg, err := msgpack.Marshal(map[string]interface{}{
+		"id":    u.Id(),
+		"name":  u.Name(),
+		"hp":    u.Health(),
+		"maxhp": u.MaxHealth(),
+		"tags":  u.Tags(),
+		"x":     x,
+		"y":     y,
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(msg)
+}
+
+// FIXME: this is dangerous, a bad packet would crash the server
+// need an elegant way to check for presence in the map
+func (u *unit) Deserialize(s string) error {
+	var attrs map[string]interface{}
+	err := msgpack.Unmarshal([]byte(s), &attrs)
+	if err != nil {
+		return err
+	}
+
+	u.id = attrs["id"].(int64)
+	u.name = attrs["name"].(string)
+	u.health = attrs["hp"].(int64)
+	u.maxHealth = attrs["maxhp"].(int64)
+	u.tags = attrs["tags"].(int64)
+	u.x = attrs["x"].(float64)
+	u.y = attrs["y"].(float64)
+
+	return nil
 }
