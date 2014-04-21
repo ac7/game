@@ -29,6 +29,7 @@ type IUnit interface {
 	Tags() int64
 	Position() (float64, float64)
 	Serialize() string
+	Deserialize(packet string) error
 
 	HasTags(tags ...int64) bool
 	AddTags(tags ...int64)
@@ -40,12 +41,20 @@ type IUnit interface {
 
 type IWorld interface {
 	AddUnit(unit IUnit)
-	Unit(id int64) IUnit
-	Units() []IUnit
 	RemoveUnit(id int64) (success bool)
+
+	// Retrieve unit by id. Return nil for no such unit found.
+	Unit(id int64) IUnit
+
+	// Return a slice of all units in the world.
+	Units() []IUnit
 }
 
 type IServer interface {
+	// The location parameter should look like "localhost:1030"
 	Listen(location string) error
+
+	// HandleConn() is called automatically when a client connects
+	// to the server, but it can be called manually for testing.
 	HandleConn(conn io.ReadWriteCloser, id int) error
 }

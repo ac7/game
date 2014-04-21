@@ -4,7 +4,6 @@ type world struct {
 	units []IUnit
 }
 
-// Returns nil if unit doesn't exist
 func (w *world) Unit(id int64) IUnit {
 	index := w.unitIndex(id)
 	if index < 0 {
