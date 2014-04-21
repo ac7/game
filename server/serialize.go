@@ -6,7 +6,7 @@ import (
 	"github.com/vmihailenco/msgpack"
 )
 
-func Serialize(u IUnit) string {
+func (u *unit) Serialize() string {
 	x, y := u.Position()
 	msg, err := msgpack.Marshal(map[string]interface{}{
 		"id":    u.Id(),

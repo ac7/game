@@ -17,7 +17,7 @@ func TestSerialize(t *testing.T) {
 
 	for _, unit := range cases {
 		t.Logf("Testing serialization for unit %+v", unit)
-		str := Serialize(unit)
+		str := unit.Serialize()
 		deserializedUnit, err := Deserialize(str)
 		if err != nil {
 			t.Fatal(err)

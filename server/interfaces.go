@@ -28,6 +28,7 @@ type IUnit interface {
 	MaxHealth() int64
 	Tags() int64
 	Position() (float64, float64)
+	Serialize() string
 
 	HasTags(tags ...int64) bool
 	AddTags(tags ...int64)
