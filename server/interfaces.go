@@ -15,6 +15,7 @@ const (
 	TAG_CLOAKED
 	TAG_SHIELDED
 	TAG_RANGED
+	TAG_MELEE
 )
 
 func newId() int64 {
