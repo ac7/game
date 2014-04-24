@@ -3,10 +3,13 @@ package server
 import (
 	"bytes"
 	"testing"
+
+	"github.com/vmihailenco/msgpack"
 )
 
 type mockConn struct {
-	t *testing.T
+	t             *testing.T
+	handshakeSent bool
 }
 
 func (mw *mockConn) Write(input []byte) (int, error) {
@@ -20,10 +23,25 @@ func (mw *mockConn) Write(input []byte) (int, error) {
 }
 
 func (mw *mockConn) Read(output []byte) (int, error) {
-	for i, b := range []byte(HANDSHAKE_CLIENT) {
-		output[i] = b
+	if !mw.handshakeSent {
+		mw.handshakeSent = true
+		for i, b := range []byte(HANDSHAKE_CLIENT) {
+			output[i] = b
+		}
+		return len(HANDSHAKE_CLIENT), nil
+	} else {
+		quitPacket, err := msgpack.Marshal(map[string]interface{}{
+			"type": "quit",
+		})
+		for i, b := range quitPacket {
+			output[i] = b
+		}
+		if err != nil {
+			mw.t.Fatal(err)
+		}
+
+		return len(quitPacket), nil
 	}
-	return len(HANDSHAKE_CLIENT), nil
 }
 
 func (mw *mockConn) Close() error {
@@ -36,7 +54,7 @@ func TestHandleConn(t *testing.T) {
 		t.Errorf("Attempt to handle nil connection did not result in error.")
 	}
 
-	mc := &mockConn{t}
+	mc := &mockConn{t, false}
 	err := server.HandleConn(mc, 0)
 	if err != nil {
 		t.Fatal(err)

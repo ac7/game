@@ -7,11 +7,16 @@ import (
 	"log"
 	"net"
 	"sync"
+
+	"github.com/vmihailenco/msgpack"
 )
+
+const CHAN_BUFFERSIZE = 32
+const MAX_PACKET_SIZE = 2048
 
 type server struct {
 	IWorld
-	toClient  chan IUnit
+	toClient  []chan IUnit
 	toServer  chan IUnit
 	waitGroup *sync.WaitGroup
 }
@@ -49,12 +54,13 @@ func (s *server) Listen(location string) error {
 
 func (s *server) HandleConn(conn io.ReadWriteCloser, id int) error {
 	if conn == nil {
-		return fmt.Errorf("Invalid connection!")
+		return fmt.Errorf("Invalid connection %d!", id)
 	}
 	s.waitGroup.Add(1)
+	defer s.waitGroup.Done()
 
 	// first we check to make sure the client returns the HANDSHAKE_CLIENT string
-	var helloMessage []byte = make([]byte, len(HANDSHAKE_CLIENT))
+	helloMessage := make([]byte, len(HANDSHAKE_CLIENT))
 	_, err := conn.Read(helloMessage)
 	if err != nil {
 		return fmt.Errorf("Could not read from connection: %s", err.Error())
@@ -64,7 +70,6 @@ func (s *server) HandleConn(conn io.ReadWriteCloser, id int) error {
 		return fmt.Errorf(`Recieved non-protocol handshake "%s" (expected "%s"), abort.`,
 			string(helloMessage), HANDSHAKE_CLIENT)
 	}
-	log.Printf("Connection %d sent correct handshake \"%s\"\n", id, HANDSHAKE_CLIENT)
 
 	// then we send the HANDSHAKE_SERVER string to the client
 	n, err := conn.Write([]byte(HANDSHAKE_SERVER))
@@ -72,18 +77,46 @@ func (s *server) HandleConn(conn io.ReadWriteCloser, id int) error {
 		return fmt.Errorf(`Cannot write to connection %d: "%s"`, id, err.Error())
 	} else if n != len(HANDSHAKE_SERVER) {
 		return fmt.Errorf("Only wrote %d bytes to connection (expected %d).", n, len(HANDSHAKE_SERVER))
-	} else {
-		log.Printf(`Sent return handshake "%s" to connection number %d`, HANDSHAKE_SERVER, id)
 	}
+	log.Printf("Accepted connection %d (handshake verified)", id)
 
-	s.waitGroup.Done()
-	return conn.Close()
+	packet := make([]byte, MAX_PACKET_SIZE)
+	table := make(map[string]interface{})
+	for {
+		_, err := conn.Read(packet)
+		if err != nil {
+			return fmt.Errorf(`Could not read from connection %d: "%s"`, id, err.Error())
+		}
+
+		err = msgpack.Unmarshal(packet, &table)
+		if err != nil {
+			return fmt.Errorf("Can't unmarshal packet: '%s'", err.Error())
+		}
+		if typeName, ok := table["type"]; ok {
+			switch typeName {
+			case "unit":
+				if id, ok := table["id"].(int64); ok {
+					u := s.Unit(id)
+					if u == nil {
+						u := new(unit)
+						s.AddUnit(u)
+					}
+					u.Deserialize(table)
+					log.Println("Decoded unit: %+v", s.Unit(id))
+				}
+			case "quit":
+				return conn.Close()
+			}
+		} else {
+			log.Printf("Warning: dropping a bad packet on %d", id)
+		}
+	}
 }
 
 func NewServer() IServer {
 	return &server{
-		toClient:  make(chan IUnit, 16),
-		toServer:  make(chan IUnit, 16),
+		toClient:  make([]chan IUnit, 0),
+		toServer:  make(chan IUnit, CHAN_BUFFERSIZE),
 		IWorld:    newWorld(),
 		waitGroup: new(sync.WaitGroup),
 	}
