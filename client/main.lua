@@ -1,5 +1,6 @@
 
 local socket = require "socket"
+local msgpack = require "MessagePack"
 local tcp
 
 function love.load(arg)
