@@ -29,8 +29,8 @@ type IUnit interface {
 	MaxHealth() int64
 	Tags() int64
 	Position() (float64, float64)
-	Serialize() string
-	Deserialize(packet string) error
+	Serialize() []byte
+	Deserialize(map[string]interface{}) error
 
 	HasTags(tags ...int64) bool
 	AddTags(tags ...int64)

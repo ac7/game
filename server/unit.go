@@ -67,7 +67,7 @@ func (u *unit) TakeDamage(amount int64) (alive bool) {
 	return
 }
 
-func (u *unit) Serialize() string {
+func (u *unit) Serialize() []byte {
 	x, y := u.Position()
 	msg, err := msgpack.Marshal(map[string]interface{}{
 		"id":    u.Id(),
@@ -82,18 +82,12 @@ func (u *unit) Serialize() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return string(msg)
+	return []byte(msg)
 }
 
 // FIXME: this is dangerous, a bad packet would crash the server
 // need an elegant way to check for presence in the map
-func (u *unit) Deserialize(s string) error {
-	var attrs map[string]interface{}
-	err := msgpack.Unmarshal([]byte(s), &attrs)
-	if err != nil {
-		return err
-	}
-
+func (u *unit) Deserialize(attrs map[string]interface{}) error {
 	u.id = attrs["id"].(int64)
 	u.name = attrs["name"].(string)
 	u.health = attrs["hp"].(int64)

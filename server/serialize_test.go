@@ -3,6 +3,8 @@ package server
 import (
 	"reflect"
 	"testing"
+
+	"github.com/vmihailenco/msgpack"
 )
 
 func TestSerialize(t *testing.T) {
@@ -19,7 +21,13 @@ func TestSerialize(t *testing.T) {
 		t.Logf("Testing serialization for unit %+v", testUnit)
 		str := testUnit.Serialize()
 		deserializedUnit := &unit{id: testUnit.Id()}
-		err := deserializedUnit.Deserialize(str)
+
+		table := make(map[string]interface{})
+		err := msgpack.Unmarshal(str, &table)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = deserializedUnit.Deserialize(table)
 		if err != nil {
 			t.Fatal(err)
 		}
