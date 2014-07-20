@@ -49,7 +49,7 @@ func (mw *mockConn) Close() error {
 }
 
 func TestHandleConn(t *testing.T) {
-	server := NewServer()
+	server := New()
 	if server.HandleConn(nil, 0) == nil {
 		t.Errorf("Attempt to handle nil connection did not result in error.")
 	}

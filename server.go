@@ -13,7 +13,7 @@ func main() {
 
 	log.Printf("Starting server on localhost:%d\n", port)
 
-	server := server.NewServer()
+	server := server.New()
 	err := server.Listen(location)
 	if err != nil {
 		log.Fatal(err)

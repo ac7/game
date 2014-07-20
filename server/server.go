@@ -113,7 +113,7 @@ func (s *server) HandleConn(conn io.ReadWriteCloser, id int) error {
 	}
 }
 
-func NewServer() IServer {
+func New() IServer {
 	return &server{
 		toClient:  make([]chan IUnit, 0),
 		toServer:  make(chan IUnit, CHAN_BUFFERSIZE),
